@@ -2,5 +2,5 @@
   "name": "chatbot-mis-persianas-madrid",
   "version": "1.0.0",
   "description": "Chatbot IA 24h para Mis Persianas Madrid",
-  "engines": { "node": "18.x" }
+  "engines": { "node": "24.x" }
 }
