@@ -16,8 +16,10 @@ module.exports = async function handler(req, res) {
       body: JSON.stringify(req.body)
     });
     const data = await response.json();
+    console.log('Anthropic response:', JSON.stringify(data));
     return res.status(200).json(data);
   } catch (error) {
-    return res.status(500).json({ error: 'Error al conectar con la IA' });
+    console.log('Error:', error.message);
+    return res.status(500).json({ error: error.message });
   }
 }
