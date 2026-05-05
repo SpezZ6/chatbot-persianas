@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis Persianas Madrid - Asistente 24h</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Segoe UI,sans-serif; background:#f2f2f7; display:flex; justify-content:center; align-items:center; min-height:100vh; padding:16px; }
+  .chat { width:100%; max-width:390px; height:88vh; max-height:780px; background:#fff; border-radius:24px; box-shadow:0 4px 24px rgba(0,0,0,0.10); display:flex; flex-direction:column; overflow:hidden; }
+  .header { background:#fff; padding:14px 18px 12px; border-bottom:1px solid #f0f0f0; display:flex; align-items:center; gap:12px; }
+  .logo-wrap { position:relative; flex-shrink:0; }
+  .online-dot { position:absolute; bottom:1px; right:1px; width:10px; height:10px; background:#34c759; border-radius:50%; border:2px solid white; }
+  .header-name { color:#000; font-weight:700; font-size:15px; letter-spacing:-0.3px; }
+  .header-sub { color:#8e8e93; font-size:12px; margin-top:2px; }
+  .ia-badge { background:#f2f2f7; color:#555; font-size:10px; font-weight:600; padding:4px 10px; border-radius:20px; margin-left:auto; }
+  .messages { flex:1; overflow-y:auto; padding:14px 12px; display:flex; flex-direction:column; gap:8px; background:#fff; scroll-behavior:smooth; }
+  .messages::-webkit-scrollbar { width:0; }
+  .msg { display:flex; flex-direction:column; }
+  .msg.bot { align-items:flex-start; }
+  .msg.user { align-items:flex-end; }
+  .msg-row { display:flex; align-items:flex-end; gap:7px; max-width:82%; }
+  .msg.user .msg-row { flex-direction:row-reverse; }
+  .bubble { padding:10px 13px; border-radius:18px; font-size:15px; line-height:1.45; white-space:pre-wrap; word-break:break-word; }
+  .bubble.bot { background:#f2f2f7; color:#000; border-bottom-left-radius:4px; }
+  .bubble.user { background:#1a3a5c; color:#fff; border-bottom-right-radius:4px; }
+  .bubble .price { color:#e8a020; font-weight:600; }
+  .preview-img { max-width:160px; border-radius:10px; display:block; margin-bottom:6px; }
+  .contact-card { background:#fff; border:1px solid #e5e5ea; border-radius:12px; padding:10px; margin-top:8px; }
+  .contact-card h4 { font-size:13px; font-weight:600; margin-bottom:7px; }
+  .contact-card p { font-size:13px; color:#333; margin-bottom:4px; }
+  .contact-card a { color:#1a3a5c; font-weight:600; text-decoration:none; }
+  .contact-card a.wa { color:#34c759; }
+  .contact-card .email-txt { font-size:11px; color:#8e8e93; }
+  .typing-bubble { padding:12px 16px; border-radius:18px; border-bottom-left-radius:4px; background:#f2f2f7; display:flex; gap:4px; align-items:center; }
+  .dot { width:6px; height:6px; background:#8e8e93; border-radius:50%; animation:bounce 1.2s infinite; }
+  .dot:nth-child(2){animation-delay:0.2s} .dot:nth-child(3){animation-delay:0.4s}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-4px)}}
+  .quick-replies { display:flex; flex-wrap:wrap; gap:6px; padding:8px 12px; border-top:1px solid #f0f0f0; }
+  .qbtn { background:#f2f2f7; border:none; color:#1a3a5c; padding:6px 13px; border-radius:20px; font-size:12px; cursor:pointer; font-family:inherit; }
+  .qbtn:hover { background:#e5e5ea; }
+  .input-area { padding:10px 12px 18px; border-top:1px solid #f0f0f0; }
+  .input-row { display:flex; align-items:center; gap:8px; background:#f2f2f7; border-radius:22px; padding:7px 7px 7px 14px; }
+  .input-row input[type=text] { flex:1; border:none; background:transparent; font-size:15px; color:#000; outline:none; font-family:inherit; }
+  .input-row input::placeholder { color:#8e8e93; }
+  .photo-btn { width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:transparent; font-size:16px; }
+  .send-btn { width:30px; height:30px; border-radius:50%; border:none; cursor:pointer; background:#c7c7cc; color:white; font-size:13px; flex-shrink:0; transition:background 0.2s; }
+  .send-btn.active { background:#1a3a5c; }
+  .send-btn:disabled { opacity:0.5; cursor:not-allowed; }
+  .disclaimer { text-align:center; font-size:10px; color:#c7c7cc; margin-top:7px; }
+  @media(max-width:440px){ body{padding:0} .chat{border-radius:0;height:100vh;max-height:100vh} }
+</style>
+</head>
+<body>
+<div class="chat">
+  <div class="header">
+    <div class="logo-wrap">
+      <svg width="42" height="42" viewBox="0 0 46 46" fill="none">
+        <circle cx="23" cy="23" r="23" fill="#e8a020"/>
+        <rect x="10" y="9" width="26" height="2.5" rx="1.25" fill="white"/>
+        <rect x="10" y="13.5" width="26" height="2.5" rx="1.25" fill="white" opacity="0.9"/>
+        <rect x="10" y="18" width="26" height="2.5" rx="1.25" fill="white" opacity="0.75"/>
+        <rect x="10" y="22.5" width="26" height="2.5" rx="1.25" fill="white" opacity="0.6"/>
+        <rect x="10" y="27" width="26" height="2.5" rx="1.25" fill="white" opacity="0.45"/>
+        <rect x="9" y="8" width="28" height="24" rx="2" fill="none" stroke="white" stroke-width="1.5"/>
+        <line x1="23" y1="33" x2="23" y2="40" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="23" cy="41" r="1.8" fill="white"/>
+      </svg>
+      <div class="online-dot"></div>
+    </div>
+    <div>
+      <div class="header-name">Mis Persianas Madrid</div>
+      <div class="header-sub">Disponible · Asistente 24h</div>
+    </div>
+    <div class="ia-badge">IA</div>
+  </div>
+  <div class="messages" id="messages"></div>
+  <div class="quick-replies" id="quickReplies"></div>
+  <div class="input-area">
+    <div class="input-row">
+      <input type="text" id="userInput" placeholder="Escribe un mensaje..."/>
+      <button class="photo-btn" onclick="document.getElementById('fileInput').click()">📷</button>
+      <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFile(event)"/>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+    <div class="disclaimer">Disponible 24h · Presupuesto sin compromiso</div>
+  </div>
+</div>
+<script>
+const SYSTEM=`Eres el asistente virtual de Mis Persianas Madrid, empresa con más de 30 años de experiencia en reparación, instalación y mantenimiento de persianas en Madrid.
+
+SERVICIOS Y PRECIOS ORIENTATIVOS:
+- Cambio de cinta: 70-80€
+- Reparación recogedor de cinta: 70-85€
+- Persiana atascada o descolgada: 70-90€
+- Reparación lamas rotas: 70-85€
+- Sustitución motor eléctrico: 100-120€
+- Instalación persiana aluminio nueva: 100-120€
+- Instalación persiana PVC nueva: 100-120€
+- Mosquiteras: 70-90€
+- Mantenimiento preventivo: 70€
+- Precio mínimo de cualquier servicio: 70€
+- Precio máximo de cualquier avería: 120€
+
+CONTACTO (solo mostrar cuando el cliente lo pida explícitamente):
+- Teléfono/WhatsApp: 613128748
+- Email: administración_26@mispersianasmadrid.com
+
+INSTRUCCIONES:
+1. Mantén una conversación natural. Responde preguntas, diagnostica problemas, da precios orientativos.
+2. NO muestres datos de contacto a menos que el cliente lo pida explícitamente.
+3. IMPORTANTE: Cuando un cliente describa cualquier problema, SIEMPRE invítale a enviar una foto antes de dar el diagnóstico. Usa frases como: "¡Perfecto! Para darte un diagnóstico más preciso, ¿puedes enviarme una foto de la avería? Así te doy el presupuesto exacto al instante 📸"
+4. Si el cliente manda una foto, analízala y da diagnóstico con precio orientativo.
+5. Respuestas cortas, claras y amables. Máximo 3-4 frases.
+6. Usa [CONTACTO] SOLO cuando el cliente lo pida explícitamente.
+7. Todos los presupuestos son sin compromiso.
+8. IMPORTANTE: Siempre menciona que cualquier reparación se realiza en máximo 48 horas. Transmítelo de forma natural: "y lo tenemos arreglado en menos de 48 horas" o "en 48 horas tu persiana estará como nueva".
+9. El precio mínimo es siempre 70€, nunca des precios por debajo.`;
+
+let history=[],pendingImg=null,loading=false;
+const messagesDiv=document.getElementById('messages');
+const quickRepliesDiv=document.getElementById('quickReplies');
+const userInput=document.getElementById('userInput');
+const sendBtn=document.getElementById('sendBtn');
+
+function logoSVG(s){return`<svg width="${s}" height="${s}" viewBox="0 0 46 46" fill="none"><circle cx="23" cy="23" r="23" fill="#e8a020"/><rect x="10" y="9" width="26" height="2.5" rx="1.25" fill="white"/><rect x="10" y="13.5" width="26" height="2.5" rx="1.25" fill="white" opacity="0.9"/><rect x="10" y="18" width="26" height="2.5" rx="1.25" fill="white" opacity="0.75"/><rect x="10" y="22.5" width="26" height="2.5" rx="1.25" fill="white" opacity="0.6"/><rect x="10" y="27" width="26" height="2.5" rx="1.25" fill="white" opacity="0.45"/><rect x="9" y="8" width="28" height="24" rx="2" fill="none" stroke="white" stroke-width="1.5"/><line x1="23" y1="33" x2="23" y2="40" stroke="white" stroke-width="1.5" stroke-linecap="round"/><circle cx="23" cy="41" r="1.8" fill="white"/></svg>`;}
+function fmt(t){return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/(\d+[-–]\d+€|\d+€)/g,'<span class="price">$1</span>');}
+
+function addMessage(role,text,imgUrl=null){
+  const hasC=text.includes('[CONTACTO]');
+  const clean=text.replace('[CONTACTO]','');
+  const div=document.createElement('div');
+  div.className=`msg ${role}`;
+  const img=imgUrl?`<img src="${imgUrl}" class="preview-img"/>`:'';
+  const card=hasC?`<div class="contact-card"><h4>👨‍🔧 Contactar con un técnico</h4><p>📱 <a href="tel:613128748">613 128 748</a></p><p>💬 <a href="https://wa.me/34613128748" class="wa">WhatsApp</a></p><p class="email-txt">📧 administración_26@mispersianasmadrid.com</p></div>`:'';
+  div.innerHTML=role==='bot'?`<div class="msg-row">${logoSVG(26)}<div class="bubble bot">${img}${fmt(clean)}${card}</div></div>`:`<div class="msg-row"><div class="bubble user">${img}${text}</div></div>`;
+  messagesDiv.appendChild(div);messagesDiv.scrollTop=messagesDiv.scrollHeight;
+}
+function addTyping(){const d=document.createElement('div');d.className='msg bot';d.id='typing';d.innerHTML=`<div class="msg-row">${logoSVG(26)}<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;messagesDiv.appendChild(d);messagesDiv.scrollTop=messagesDiv.scrollHeight;}
+function removeTyping(){const t=document.getElementById('typing');if(t)t.remove();}
+function showQR(list){quickRepliesDiv.innerHTML='';list.forEach(r=>{const b=document.createElement('button');b.className='qbtn';b.textContent=r;b.onclick=()=>{if(r==='Enviar foto 📷'){document.getElementById('fileInput').click();}else{userInput.value=r;quickRepliesDiv.innerHTML='';sendMessage();}};quickRepliesDiv.appendChild(b);});}
+function updateBtn(){sendBtn.classList.toggle('active',!!(userInput.value.trim()||pendingImg));}
+
+async function sendMessage(){
+  const text=userInput.value.trim();
+  if((!text&&!pendingImg)||loading)return;
+  loading=true;sendBtn.disabled=true;quickRepliesDiv.innerHTML='';
+  const imgUrl=pendingImg;pendingImg=null;
+  userInput.value='';userInput.placeholder='Escribe un mensaje...';updateBtn();
+  addMessage('user',text||'📷 Foto enviada',imgUrl);addTyping();
+  let uc;
+  if(imgUrl){const b64=imgUrl.split(',')[1];const mime=imgUrl.split(';')[0].split(':')[1];uc=[{type:'image',source:{type:'base64',media_type:mime,data:b64}},{type:'text',text:text||'Te envío una foto del problema. ¿Puedes diagnosticar y dar un presupuesto?'}];}
+  else{uc=text;}
+  history.push({role:'user',content:uc});
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYSTEM,messages:history})});
+    const data=await res.json();removeTyping();
+    const bt=data.content?.[0]?.text||'Lo siento, ha ocurrido un error.';
+    history.push({role:'assistant',content:bt});addMessage('bot',bt);
+    const total=history.length;
+    if(total<=2)showQR(['Enviar foto 📷','¿Cuánto cuesta?','Tengo urgencia']);
+    else if(total<=6)showQR(['Enviar foto 📷','Otra pregunta','Hablar con técnico']);
+    else showQR(['Hablar con técnico','Pedir visita']);
+  }catch(e){removeTyping();addMessage('bot','Ha ocurrido un error. Inténtalo de nuevo.');}
+  loading=false;sendBtn.disabled=false;
+}
+function handleFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{pendingImg=ev.target.result;userInput.placeholder='📷 Foto lista — escribe o envía';updateBtn();};r.readAsDataURL(f);e.target.value='';}
+userInput.addEventListener('input',updateBtn);
+userInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendMessage();}});
+setTimeout(()=>{addMessage('bot','¡Hola! 👋 Soy el asistente de **Mis Persianas Madrid**.\n\nEstoy disponible las 24h para ayudarte. Cuéntame qué ocurre o envía una foto de la avería y te doy un diagnóstico y precio orientativo al instante 📸');showQR(['Persiana atascada','Pedir presupuesto','Motor averiado','Cambio de cinta']);},300);
+</script>
+</body>
+</html>
